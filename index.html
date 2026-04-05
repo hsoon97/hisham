@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>نظام متابعة الحلقات القرآنية</title>
+<link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Tajawal:wght@300;400;500;700;800;900&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#F8F6F0;--card:#FFF;--primary:#1B6B4A;--pL:#E8F5EE;--pD:#134D35;--accent:#C8956C;--aL:#FFF3E8;--text:#2C3E50;--tL:#7F8C8D;--border:#E8E4DC;--gold:#D4A017;--gL:#FFF8E1;--danger:#E74C3C;--dL:#FDEDEC;--success:#2ECC71;--sL:#EAFAF1;--warn:#F1C40F;--wL:#FEF9E7;--info:#3498DB;--iL:#EBF5FB}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Tajawal',sans-serif;background:linear-gradient(180deg,var(--bg),#EDE8DF);color:var(--text);min-height:100vh;direction:rtl}
+.hdr{background:linear-gradient(135deg,var(--primary),var(--pD));position:sticky;top:0;z-index:100;box-shadow:0 4px 20px rgba(0,0,0,.15)}
+.hdr-in{max-width:1200px;margin:0 auto;padding:20px 20px 0}
+.hdr-top{display:flex;align-items:center;gap:14px;margin-bottom:14px}
+.hdr-ico{width:48px;height:48px;border-radius:14px;background:rgba(255,255,255,.15);display:flex;align-items:center;justify-content:center;font-size:26px}
+.hdr h1{font-family:'Amiri',serif;font-size:22px;font-weight:700;color:#fff;line-height:1.2}
+.hdr .sub{color:rgba(255,255,255,.7);font-size:12px}
+.nav{display:flex;gap:2px;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+.nav::-webkit-scrollbar{display:none}
+.nb{padding:10px 14px;background:0;border:0;border-bottom:3px solid transparent;color:rgba(255,255,255,.6);font-size:12px;font-weight:500;cursor:pointer;border-radius:10px 10px 0 0;transition:.2s;white-space:nowrap;font-family:'Tajawal',sans-serif;display:flex;align-items:center;gap:5px}
+.nb.on{background:rgba(255,255,255,.2);border-bottom-color:#fff;color:#fff;font-weight:700}
+.ct{max-width:1200px;margin:0 auto;padding:20px 16px 40px}
+.cd{background:var(--card);border-radius:16px;padding:20px;box-shadow:0 2px 12px rgba(0,0,0,.05);border:1px solid var(--border);margin-bottom:14px}
+.cd-t{font-size:16px;font-weight:700;margin-bottom:16px;display:flex;align-items:center;gap:8px;justify-content:space-between;flex-wrap:wrap}
+.bd{padding:3px 10px;border-radius:16px;font-size:11px;font-weight:700;display:inline-block}
+.mb{width:100%;height:5px;background:#EEE;border-radius:3px;overflow:hidden}.mb-f{height:100%;border-radius:3px;transition:width .5s}
+.sg{display:flex;flex-wrap:wrap;gap:12px;margin-bottom:20px}
+.sc{background:var(--card);border-radius:12px;padding:16px;box-shadow:0 2px 12px rgba(0,0,0,.05);border:1px solid var(--border);flex:1 1 180px;min-width:150px}
+.sc-v{font-size:26px;font-weight:800;margin-top:8px}
+.sc-s{font-size:11px;color:var(--tL);margin-top:3px}
+.g2{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:16px}
+.g3{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px}
+.g4{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px}
+.fw{grid-column:1/-1}
+table{width:100%;border-collapse:separate;border-spacing:0 4px}
+th{text-align:right;padding:8px 10px;font-size:12px;color:var(--tL);font-weight:600}
+th.c{text-align:center}td{padding:10px}td.c{text-align:center}
+tr.hl{background:var(--gL)}tr.al{background:#FAFAF8}
+input[type=text],input[type=date],input[type=number],select,textarea{padding:9px 12px;border-radius:10px;border:1px solid var(--border);font-size:13px;font-family:'Tajawal',sans-serif;direction:rtl;background:#fff;transition:.2s;width:100%}
+input:focus,select:focus,textarea:focus{outline:0;border-color:var(--primary)}
+textarea{resize:vertical;min-height:50px}
+.btn{padding:8px 20px;border-radius:10px;border:0;font-size:13px;font-weight:700;cursor:pointer;font-family:'Tajawal',sans-serif;transition:.2s;display:inline-flex;align-items:center;gap:5px}
+.btn-s{padding:5px 12px;font-size:11px;border-radius:8px}
+.btn-p{background:linear-gradient(135deg,var(--primary),var(--pD));color:#fff;box-shadow:0 2px 8px rgba(27,107,74,.3)}
+.btn-p:hover{transform:translateY(-1px)}
+.btn-ok{background:var(--success);color:#fff}
+.btn-d{background:var(--danger);color:#fff}
+.btn-w{background:var(--warn);color:#fff}
+.btn-o{padding:5px 12px;border-radius:8px;border:1px solid var(--border);background:#fff;color:var(--tL);font-size:12px;font-weight:600;cursor:pointer;font-family:'Tajawal',sans-serif;transition:.2s}
+.btn-o.on{border-color:var(--primary);background:var(--pL);color:var(--primary)}
+.btn-o:hover{border-color:var(--primary);color:var(--primary)}
+.btn-i{width:32px;height:32px;border-radius:8px;border:1px solid var(--border);background:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:14px;transition:.2s}
+.btn-i:hover{background:var(--pL);border-color:var(--primary)}
+.sr{padding:8px 12px;border-radius:10px;background:var(--bg);display:flex;align-items:center;gap:8px}
+.sl{font-size:12px;font-weight:600;min-width:60px;display:flex;align-items:center;gap:4px}
+.sb{width:30px;height:30px;border-radius:8px;border:1px solid var(--border);background:var(--bg);cursor:pointer;font-size:15px;font-weight:700;display:flex;align-items:center;justify-content:center;font-family:'Tajawal',sans-serif;color:var(--text)}
+.sb.p{border-color:var(--primary);background:var(--pL);color:var(--primary)}
+.sbar{flex:1;height:7px;background:#EEE;border-radius:4px}
+.sbar-f{height:100%;border-radius:4px;transition:.3s}
+.sv{min-width:32px;text-align:center;font-weight:800;font-size:16px}
+.sec{border-right:4px solid var(--primary);transition:.2s}
+.sec:hover{box-shadow:0 4px 20px rgba(0,0,0,.08)}
+.av{width:40px;height:40px;border-radius:10px;background:linear-gradient(135deg,var(--primary),var(--pD));color:#fff;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:15px;flex-shrink:0}
+.av-l{width:46px;height:46px;border-radius:12px;font-size:18px;font-family:'Amiri',serif}
+.av-g{width:56px;height:56px;border-radius:14px;background:linear-gradient(135deg,var(--gold),var(--accent));font-size:22px}
+.aw{background:linear-gradient(135deg,var(--gL),#FFF);border-radius:16px;padding:20px;text-align:center;border:2px solid rgba(212,160,23,.25);box-shadow:0 4px 16px rgba(212,160,23,.08)}
+.ch{display:flex;align-items:flex-end;gap:6px;height:140px;padding-top:8px}
+.cb{flex:1;text-align:center;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%}
+.cb-i{width:65%;border-radius:5px 5px 0 0;transition:height .5s;min-height:3px}
+.cg{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:10px}
+.es{text-align:center;padding:30px;color:var(--tL)}.es .ic{font-size:40px;margin-bottom:10px}
+.fx{display:flex}.fw_{flex-wrap:wrap}.ac{align-items:center}.jb{justify-content:space-between}
+.g6{gap:6px}.g8{gap:8px}.g10{gap:10px}.g12{gap:12px}.g14{gap:14px}
+.mt8{margin-top:8px}.mt12{margin-top:12px}.mt16{margin-top:16px}.mt20{margin-top:20px}
+.mb8{margin-bottom:8px}.mb12{margin-bottom:12px}.mb16{margin-bottom:16px}
+
+.mo{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.5);z-index:200;display:flex;align-items:center;justify-content:center;padding:16px;opacity:0;pointer-events:none;transition:.3s}
+.mo.sh{opacity:1;pointer-events:auto}
+.ml{background:var(--card);border-radius:18px;padding:24px;max-width:560px;width:100%;max-height:85vh;overflow-y:auto;transform:translateY(20px);transition:.3s}
+.mo.sh .ml{transform:translateY(0)}
+.mt_{font-size:17px;font-weight:700;margin-bottom:18px;display:flex;align-items:center;gap:10px;justify-content:space-between}
+.mc{width:30px;height:30px;border-radius:8px;border:0;background:var(--bg);cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center}
+.fg{margin-bottom:14px}.fg label{display:block;font-size:13px;font-weight:600;margin-bottom:5px}
+.fr{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.dv{height:1px;background:var(--border);margin:16px 0}
+
+.ss{border:1px solid var(--border);border-radius:12px;padding:18px;margin-bottom:14px;background:#FAFAF8}
+.ss-t{font-size:14px;font-weight:700;margin-bottom:12px;display:flex;align-items:center;gap:8px;color:var(--primary);justify-content:space-between}
+.si{display:flex;align-items:center;justify-content:space-between;padding:10px 12px;border-radius:10px;background:#fff;border:1px solid var(--border);margin-bottom:6px;transition:.2s;gap:10px}
+.si:hover{border-color:var(--primary);box-shadow:0 1px 6px rgba(0,0,0,.03)}
+.si .nfo{flex:1}.si .nfo .nm{font-weight:600;font-size:13px}.si .nfo .ds{font-size:11px;color:var(--tL);margin-top:2px}
+.si .ax{display:flex;gap:4px;align-items:center}
+
+.cg_{display:flex;gap:6px;flex-wrap:wrap}
+.cd_{width:26px;height:26px;border-radius:6px;cursor:pointer;border:2px solid transparent;transition:.2s}
+.cd_:hover,.cd_.on{border-color:var(--text);transform:scale(1.12)}
+
+.tt{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(70px);background:var(--pD);color:#fff;padding:10px 24px;border-radius:10px;font-size:13px;font-weight:600;z-index:300;transition:.4s;box-shadow:0 4px 16px rgba(0,0,0,.2);display:flex;align-items:center;gap:6px}
+.tt.sh{transform:translateX(-50%) translateY(0)}
+
+.tg{display:inline-flex;align-items:center;gap:4px;padding:3px 8px;border-radius:6px;font-size:11px;font-weight:600;background:var(--pL);color:var(--primary)}
+
+.tabs{display:flex;gap:4px;border-bottom:2px solid var(--border);margin-bottom:16px;overflow-x:auto}
+.tab{padding:8px 16px;font-size:13px;font-weight:600;cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-2px;color:var(--tL);transition:.2s;white-space:nowrap;font-family:'Tajawal',sans-serif;background:0;border-left:0;border-right:0;border-top:0}
+.tab.on{color:var(--primary);border-bottom-color:var(--primary)}
+
+@media print{.hdr,.nav,.btn,.btn-i,.btn-o,.mo,.tt,.no-print{display:none!important}.cd{box-shadow:none;border:1px solid #ddd;break-inside:avoid}body{background:#fff}}
+@media(max-width:768px){.hdr h1{font-size:18px}.g2,.g3,.g4{grid-template-columns:1fr}.sg{flex-direction:column}.nb{padding:8px 10px;font-size:11px}.cd{padding:14px}.cg{grid-template-columns:1fr}.fr{grid-template-columns:1fr}.ml{padding:18px}}
+</style>
+</head>
+<body>
+
+<header class="hdr">
+<div class="hdr-in">
+<div class="hdr-top">
+<div class="hdr-ico">📖</div>
+<div style="flex:1"><h1 id="sT">نظام متابعة الحلقات القرآنية</h1><p class="sub" id="sI"></p><p class="sub" id="sD"></p></div>
+</div>
+<nav class="nav" id="nv"></nav>
+</div>
+</header>
+
+<div class="ct">
+<div id="p-dash" class="page" style="display:block"></div>
+<div id="p-eval" class="page" style="display:none"></div>
+<div id="p-stu" class="page" style="display:none"></div>
+<div id="p-rep" class="page" style="display:none"></div>
+<div id="p-aw" class="page" style="display:none"></div>
+<div id="p-set" class="page" style="display:none"></div>
+</div>
+
+<div class="mo" id="moO" onclick="if(event.target===this)cM()"><div class="ml" id="moC"></div></div>
+<div class="tt" id="tt"></div>
+
+<script>
+const DA=["الأحد","الإثنين","الثلاثاء","الأربعاء","الخميس","الجمعة","السبت"];
+const MA=["يناير","فبراير","مارس","أبريل","مايو","يونيو","يوليو","أغسطس","سبتمبر","أكتوبر","نوفمبر","ديسمبر"];
+const TD=new Date().toISOString().split("T")[0];
+const CL=["#1B6B4A","#2ECC71","#3498DB","#9B59B6","#E67E22","#E74C3C","#1ABC9C","#34495E","#F39C12","#C0392B","#8E44AD","#2980B9"];
+const IC=["📖","🎯","🔄","🎤","⭐","📝","💡","🏆","📚","🤲","🕌","❤️","✨","🎓","📏","🔔","🎶","🧠","💪","🌟"];
+const LV=[{min:0,p:0,l:"ضعيف",c:"#E74C3C",b:"#FDEDEC"},{min:40,p:40,l:"مقبول",c:"#E67E22",b:"#FDF2E9"},{min:60,p:60,l:"جيد",c:"#F1C40F",b:"#FEF9E7"},{min:80,p:80,l:"جيد جداً",c:"#2ECC71",b:"#EAFAF1"},{min:90,p:90,l:"ممتاز",c:"#1ABC9C",b:"#E8F8F5"}];
+
+function gL(s,m){const p=(s/m)*100;for(let i=LV.length-1;i>=0;i--)if(p>=LV[i].p)return LV[i];return LV[0]}
+function fD(d){const x=new Date(d);return`${DA[x.getDay()]} ${x.getDate()} ${MA[x.getMonth()]} ${x.getFullYear()}`}
+function bd(l,c,b){return`<span class="bd" style="background:${b};color:${c}">${l}</span>`}
+function mb(v,m,c){return`<div class="mb"><div class="mb-f" style="width:${(v/m)*100}%;background:${c}"></div></div>`}
+function gI(){return Date.now()+'_'+Math.random().toString(36).substr(2,5)}
+
+const DEF={
+  settings:{institutionName:"",teacherName:"",academicYear:"1446-1447",systemTitle:"نظام متابعة الحلقات القرآنية"},
+  groups:[{id:"g1",name:"المجموعة أ",color:"#1B6B4A"},{id:"g2",name:"المجموعة ب",color:"#3498DB"},{id:"g3",name:"المجموعة ج",color:"#E67E22"}],
+  criteria:[
+    {id:"hifz",name:"الحفظ",icon:"📖",max:10,desc:"مقدار الحفظ الجديد",active:true},
+    {id:"tajweed",name:"التجويد",icon:"🎯",max:10,desc:"تطبيق أحكام التجويد",active:true},
+    {id:"muraja",name:"المراجعة",icon:"🔄",max:10,desc:"إتقان المراجعة",active:true},
+    {id:"tilawa",name:"التلاوة",icon:"🎤",max:10,desc:"جودة التلاوة والأداء",active:true},
+    {id:"suluk",name:"السلوك",icon:"⭐",max:10,desc:"الأدب والانضباط",active:true}],
+  students:[
+    {id:"s1",name:"أحمد محمد العمري",groupId:"g1",phone:"",parentName:"",notes:"",joinDate:TD},
+    {id:"s2",name:"عبدالله خالد السعدي",groupId:"g1",phone:"",parentName:"",notes:"",joinDate:TD},
+    {id:"s3",name:"يوسف إبراهيم الحربي",groupId:"g1",phone:"",parentName:"",notes:"",joinDate:TD},
+    {id:"s4",name:"عمر سعد الغامدي",groupId:"g2",phone:"",parentName:"",notes:"",joinDate:TD},
+    {id:"s5",name:"محمد فهد القرشي",groupId:"g2",phone:"",parentName:"",notes:"",joinDate:TD},
+    {id:"s6",name:"سلطان عادل الزهراني",groupId:"g2",phone:"",parentName:"",notes:"",joinDate:TD},
+    {id:"s7",name:"فيصل ناصر المالكي",groupId:"g3",phone:"",parentName:"",notes:"",joinDate:TD},
+    {id:"s8",name:"خالد وليد الشهري",groupId:"g3",phone:"",parentName:"",notes:"",joinDate:TD}],
+  evaluations:{},
+  attendance:{}
+};
+
+function lD(){try{const s=localStorage.getItem("qe_v3");if(s){const d=JSON.parse(s);if(d.groups&&d.criteria)return d}}catch(e){}return JSON.parse(JSON.stringify(DEF))}
+function sD(){localStorage.setItem("qe_v3",JSON.stringify(D))}
+
+let D=lD();
+let cP="dash",eD=TD,eF="all",eS={},eN={},rP="daily",rS="all",rDF="",rDT="";
+
+function aC(){return D.criteria.filter(c=>c.active)}
+function mS(){return aC().reduce((s,c)=>s+c.max,0)}
+function gG(id){return D.groups.find(g=>g.id===id)||{name:"—",color:"#888"}}
+
+const PG=[{id:"dash",l:"لوحة التحكم",i:"📊"},{id:"eval",l:"التقييم اليومي",i:"✍️"},{id:"stu",l:"الطلاب",i:"👥"},{id:"rep",l:"التقارير",i:"📋"},{id:"aw",l:"الجوائز",i:"🏆"},{id:"set",l:"الإعدادات",i:"⚙️"}];
+
+function tst(m,d=2500){const t=document.getElementById("tt");t.innerHTML=m;t.classList.add("sh");setTimeout(()=>t.classList.remove("sh"),d)}
+function oM(h){document.getElementById("moC").innerHTML=h;document.getElementById("moO").classList.add("sh")}
+function cM(){document.getElementById("moO").classList.remove("sh")}
+
+function iN(){
+  document.getElementById("nv").innerHTML=PG.map(p=>`<button class="nb ${p.id===cP?'on':''}" onclick="go('${p.id}')">${p.i} ${p.l}</button>`).join("");
+  document.getElementById("sD").textContent=fD(TD);
+  document.getElementById("sT").textContent=D.settings.systemTitle||"نظام متابعة الحلقات القرآنية";
+  const sub=[];if(D.settings.institutionName)sub.push(D.settings.institutionName);if(D.settings.teacherName)sub.push("المعلم: "+D.settings.teacherName);if(D.settings.academicYear)sub.push(D.settings.academicYear);
+  document.getElementById("sI").textContent=sub.join(" • ");
+}
+function go(p){cP=p;document.querySelectorAll(".page").forEach(e=>e.style.display="none");document.getElementById("p-"+p).style.display="block";document.querySelectorAll(".nb").forEach((b,i)=>b.classList.toggle("on",PG[i].id===p));rn()}
+function rn(){({dash:rDash,eval:rEval,stu:rStu,rep:rRep,aw:rAw,set:rSet})[cP]()}
+
+// ══════════════════════════════════════
+// DASHBOARD
+// ══════════════════════════════════════
+function rDash(){
+  const el=document.getElementById("p-dash"),{students:st,evaluations:ev}=D,ac=aC(),ms=mS();
+  const te=st.map(s=>ev[`${s.id}-${TD}`]).filter(Boolean);
+  const ts=st.length,et=te.length;
+  const at=te.length>0?(te.reduce((s,e)=>s+ac.reduce((s2,c)=>s2+(e.scores[c.id]||0),0),0)/te.length).toFixed(1):"—";
+  const top=st.map(s=>{const ae=Object.values(ev).filter(e=>e.studentId===s.id);const a=ae.length>0?ae.reduce((s2,e)=>s2+ac.reduce((s3,c)=>s3+(e.scores[c.id]||0),0),0)/ae.length:0;return{...s,avg:a,ec:ae.length}}).sort((a,b)=>b.avg-a.avg);
+  const ca=ac.map(c=>{const sc=Object.values(ev).map(e=>e.scores[c.id]||0);return{...c,avg:sc.length>0?+(sc.reduce((a,b)=>a+b,0)/sc.length).toFixed(1):0}});
+  const l7=Array.from({length:7},(_,i)=>{const d=new Date();d.setDate(d.getDate()-(6-i));const ds=d.toISOString().split("T")[0];const de=Object.values(ev).filter(e=>e.date===ds);const a=de.length>0?de.reduce((s,e)=>s+ac.reduce((s2,c)=>s2+(e.scores[c.id]||0),0),0)/de.length:0;return{date:ds,day:DA[d.getDay()],avg:+a.toFixed(1),cnt:de.length}});
+
+  el.innerHTML=`
+  <div class="sg">
+    <div class="sc"><div class="fx ac g10 mb8"><div class="av" style="width:36px;height:36px;border-radius:8px;font-size:18px;background:rgba(27,107,74,.1);color:var(--primary)">👥</div><span style="font-size:12px;color:var(--tL)">عدد الطلاب</span></div><div class="sc-v" style="color:var(--primary)">${ts}</div></div>
+    <div class="sc"><div class="fx ac g10 mb8"><div class="av" style="width:36px;height:36px;border-radius:8px;font-size:18px;background:${et===ts?'rgba(46,204,113,.1)':'rgba(200,149,108,.1)'};color:${et===ts?'var(--success)':'var(--accent)'}">✅</div><span style="font-size:12px;color:var(--tL)">تم تقييمهم اليوم</span></div><div class="sc-v" style="color:${et===ts?'var(--success)':'var(--accent)'}">${et}/${ts}</div><div class="sc-s">${et===ts?'✓ اكتمل':'بانتظار الإكمال'}</div></div>
+    <div class="sc"><div class="fx ac g10 mb8"><div class="av" style="width:36px;height:36px;border-radius:8px;font-size:18px;background:rgba(27,107,74,.1);color:var(--primary)">📈</div><span style="font-size:12px;color:var(--tL)">متوسط اليوم</span></div><div class="sc-v" style="color:var(--primary)">${at}</div><div class="sc-s">من ${ms}</div></div>
+    <div class="sc"><div class="fx ac g10 mb8"><div class="av" style="width:36px;height:36px;border-radius:8px;font-size:18px;background:rgba(212,160,23,.1);color:var(--gold)">📅</div><span style="font-size:12px;color:var(--tL)">إجمالي التقييمات</span></div><div class="sc-v" style="color:var(--gold)">${Object.keys(ev).length}</div></div>
+  </div>
+  <div class="g2">
+    <div class="cd"><div class="cd-t"><span>📊 أداء آخر 7 أيام</span></div><div class="ch">${l7.map(d=>`<div class="cb"><span style="font-size:10px;font-weight:700;color:var(--primary);margin-bottom:3px">${d.avg>0?d.avg:''}</span><div class="cb-i" style="height:${d.avg>0?(d.avg/ms)*110:3}px;background:${d.date===TD?'linear-gradient(180deg,var(--primary),var(--pD))':d.avg>0?'linear-gradient(180deg,var(--accent),#B07D5B)':'#EEE'}"></div><span style="font-size:10px;color:${d.date===TD?'var(--primary)':'var(--tL)'};font-weight:${d.date===TD?700:400};margin-top:5px">${d.day}</span></div>`).join("")}</div></div>
+    <div class="cd"><div class="cd-t"><span>🎯 أداء المعايير</span></div><div style="display:flex;flex-direction:column;gap:12px">${ca.map(c=>`<div><div class="fx jb" style="margin-bottom:5px"><span style="font-size:13px;font-weight:600">${c.icon} ${c.name}</span><span style="font-size:13px;font-weight:700;color:var(--primary)">${c.avg}/${c.max}</span></div>${mb(c.avg,c.max,c.avg/c.max>=.8?'#2ECC71':c.avg/c.max>=.5?'#F1C40F':'#E74C3C')}</div>`).join("")}</div></div>
+    <div class="cd fw"><div class="cd-t"><span>🏅 ترتيب الطلاب</span></div><div style="overflow-x:auto"><table><thead><tr><th>#</th><th>الطالب</th><th class="c">المجموعة</th><th class="c">المتوسط</th><th class="c">المستوى</th><th class="c">التقييمات</th><th class="c" style="min-width:100px">الأداء</th></tr></thead><tbody>${top.map((s,i)=>{const g=gG(s.groupId),lv=gL(s.avg,ms);return`<tr class="${i<3?'hl':i%2===0?'al':''}"><td style="font-weight:800;font-size:15px;color:${i<3?'var(--gold)':'var(--tL)'}">${i===0?'🥇':i===1?'🥈':i===2?'🥉':i+1}</td><td style="font-weight:600;cursor:pointer" onclick="viewStudent('${s.id}')">${s.name}</td><td class="c">${bd(g.name,g.color,g.color+'20')}</td><td class="c" style="font-weight:800;font-size:16px;color:${lv.c}">${s.avg.toFixed(1)}</td><td class="c">${bd(lv.l,lv.c,lv.b)}</td><td class="c" style="color:var(--tL)">${s.ec}</td><td>${mb(s.avg,ms,lv.c)}</td></tr>`}).join("")}</tbody></table></div></div>
+  </div>`;
+}
+
+// ══════════════════════════════════════
+// STUDENT PROFILE VIEW
+// ══════════════════════════════════════
+function viewStudent(id){
+  const s=D.students.find(x=>x.id===id);if(!s)return;
+  const g=gG(s.groupId),ac=aC(),ms=mS();
+  const ae=Object.values(D.evaluations).filter(e=>e.studentId===id).sort((a,b)=>b.date.localeCompare(a.date));
+  const avg=ae.length>0?ae.reduce((s2,e)=>s2+ac.reduce((s3,c)=>s3+(e.scores[c.id]||0),0),0)/ae.length:0;
+  const lv=gL(avg,ms);
+  const perC=ac.map(c=>{const sc=ae.map(e=>e.scores[c.id]||0);return{...c,avg:sc.length>0?+(sc.reduce((a,b)=>a+b,0)/sc.length).toFixed(1):0}});
+  const last10=ae.slice(0,10);
+
+  oM(`
+    <div class="mt_"><span>👤 ملف الطالب</span><button class="mc" onclick="cM()">✕</button></div>
+    <div class="fx ac g12 mb16">
+      <div class="av av-l">${s.name.charAt(0)}</div>
+      <div style="flex:1"><div style="font-weight:700;font-size:17px">${s.name}</div>
+        <div class="fx g6 mt8">${bd(g.name,g.color,g.color+'20')} ${bd(ae.length+' تقييم','var(--accent)','var(--aL)')}</div>
+      </div>
+      <div style="text-align:center"><div style="font-size:32px;font-weight:800;color:${lv.c}">${avg.toFixed(1)}</div><div style="font-size:11px;color:var(--tL)">من ${ms}</div>${bd(lv.l,lv.c,lv.b)}</div>
+    </div>
+    ${s.phone?`<div style="font-size:12px;color:var(--tL);margin-bottom:4px">📱 ${s.phone}</div>`:''}
+    ${s.parentName?`<div style="font-size:12px;color:var(--tL);margin-bottom:4px">👨‍👧 ولي الأمر: ${s.parentName}</div>`:''}
+    ${s.notes?`<div style="font-size:12px;color:var(--tL);margin-bottom:4px">📝 ${s.notes}</div>`:''}
+    <div class="dv"></div>
+    <div style="font-weight:700;margin-bottom:10px">📏 متوسط كل معيار</div>
+    <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:16px">${perC.map(c=>`<div class="fx jb ac"><span style="font-size:13px">${c.icon} ${c.name}</span><span style="font-weight:700;color:var(--primary)">${c.avg}/${c.max}</span></div>`).join("")}</div>
+    ${last10.length>0?`<div class="dv"></div><div style="font-weight:700;margin-bottom:10px">📅 آخر ${last10.length} تقييمات</div>
+    <div style="max-height:200px;overflow-y:auto">${last10.map(e=>{const t=ac.reduce((s2,c)=>s2+(e.scores[c.id]||0),0);const l2=gL(t,ms);return`<div class="fx jb ac" style="padding:6px 0;border-bottom:1px solid var(--border)"><span style="font-size:12px;color:var(--tL)">${fD(e.date)}</span><span style="font-weight:700;color:${l2.c}">${t}/${ms}</span></div>`}).join("")}</div>`:''}
+  `);
+}
+
+// ══════════════════════════════════════
+// EVALUATE
+// ══════════════════════════════════════
+function iES(){eS={};eN={};D.students.forEach(s=>{const x=D.evaluations[`${s.id}-${eD}`];if(x){eS[s.id]={...x.scores};eN[s.id]=x.notes||""}else{eS[s.id]={};aC().forEach(c=>{eS[s.id][c.id]=Math.round(c.max/2)});eN[s.id]=""}})}
+function rEval(){
+  iES();const el=document.getElementById("p-eval"),ac=aC(),ms=mS(),gs=D.groups;
+  const fl=eF==="all"?D.students:D.students.filter(s=>s.groupId===eF);
+  el.innerHTML=`
+  <div class="cd no-print"><div class="fx fw_ ac jb g12">
+    <div class="fx ac g10"><span style="font-size:13px;font-weight:600">التاريخ:</span><input type="date" value="${eD}" onchange="eD=this.value;rEval()" style="width:auto"></div>
+    <div class="fx g6 fw_"><button class="btn-o ${eF==='all'?'on':''}" onclick="eF='all';rEval()">الكل (${D.students.length})</button>${gs.map(g=>{const c=D.students.filter(s=>s.groupId===g.id).length;return`<button class="btn-o ${eF===g.id?'on':''}" onclick="eF='${g.id}';rEval()" style="${eF===g.id?'border-color:'+g.color+';background:'+g.color+'15;color:'+g.color:''}">${g.name} (${c})</button>`}).join("")}</div>
+    <button class="btn btn-p" onclick="svEv()" id="svB">💾 حفظ الكل</button>
+  </div></div>
+  <div style="display:flex;flex-direction:column;gap:12px">${fl.map(st=>{
+    const tot=ac.reduce((s,c)=>s+(eS[st.id]?.[c.id]||0),0),lv=gL(tot,ms),g=gG(st.groupId);
+    return`<div class="cd sec" style="border-right-color:${lv.c}">
+      <div class="fx jb ac mb12"><div class="fx ac g10"><div class="av">${st.name.charAt(0)}</div><div><div style="font-weight:700;font-size:15px">${st.name}</div>${bd(g.name,g.color,g.color+'20')}</div></div>
+      <div style="text-align:center"><div style="font-size:26px;font-weight:800;color:${lv.c}" id="t-${st.id}">${tot}</div><span style="font-size:10px;color:var(--tL)">من ${ms}</span><br>${bd(lv.l,lv.c,lv.b)}</div></div>
+      <div class="cg">${ac.map(c=>{const v=eS[st.id]?.[c.id]??0,p=v/c.max,sc=p>=.9?'var(--primary)':p>=.7?'#2ECC71':p>=.5?'#F1C40F':p>=.3?'#E67E22':'#E74C3C';
+        return`<div class="sr"><span class="sl">${c.icon} ${c.name}</span><button class="sb" onclick="cs('${st.id}','${c.id}',-1)">−</button><div class="sbar"><div class="sbar-f" id="b-${st.id}-${c.id}" style="width:${p*100}%;background:${sc}"></div></div><span class="sv" id="v-${st.id}-${c.id}" style="color:${sc}">${v}</span><button class="sb p" onclick="cs('${st.id}','${c.id}',1)">+</button></div>`}).join("")}</div>
+      <input type="text" placeholder="ملاحظات..." value="${eN[st.id]||''}" onchange="eN['${st.id}']=this.value" style="margin-top:10px">
+    </div>`}).join("")}</div>`;
+}
+function cs(sid,cid,d){const c=D.criteria.find(x=>x.id===cid);if(!c)return;const v=Math.max(0,Math.min(c.max,(eS[sid]?.[cid]??0)+d));eS[sid][cid]=v;const p=v/c.max,sc=p>=.9?'var(--primary)':p>=.7?'#2ECC71':p>=.5?'#F1C40F':p>=.3?'#E67E22':'#E74C3C';const se=document.getElementById(`v-${sid}-${cid}`),be=document.getElementById(`b-${sid}-${cid}`);if(se){se.textContent=v;se.style.color=sc}if(be){be.style.width=p*100+'%';be.style.background=sc}const tot=aC().reduce((s,cr)=>s+(eS[sid]?.[cr.id]||0),0),te=document.getElementById(`t-${sid}`);if(te){const lv=gL(tot,mS());te.textContent=tot;te.style.color=lv.c}}
+function svEv(){D.students.forEach(s=>{D.evaluations[`${s.id}-${eD}`]={studentId:s.id,date:eD,scores:{...eS[s.id]},notes:eN[s.id]||"",ts:new Date().toISOString()}});sD();tst("✓ تم حفظ جميع التقييمات");const b=document.getElementById("svB");b.textContent="✓ تم الحفظ";b.className="btn btn-ok";setTimeout(()=>{b.textContent="💾 حفظ الكل";b.className="btn btn-p"},2500)}
+
+// ══════════════════════════════════════
+// STUDENTS
+// ══════════════════════════════════════
+function rStu(){
+  const el=document.getElementById("p-stu");
+  let sF="all";
+  el.innerHTML=`
+  <div class="cd"><div class="cd-t"><span>👥 إدارة الطلاب (${D.students.length})</span><div class="fx g6"><button class="btn btn-p btn-s" onclick="oSM()">➕ إضافة طالب</button><button class="btn-o" onclick="bulkImport()">📥 استيراد متعدد</button></div></div>
+    <div class="fx g6 fw_ mb16 no-print">${[{id:"all",name:"الكل"},...D.groups].map(g=>`<button class="btn-o ${g.id==='all'?'on':''}" onclick="this.parentElement.querySelectorAll('.btn-o').forEach(b=>b.classList.remove('on'));this.classList.add('on');filterStudents('${g.id}')">${g.id==='all'?'الكل ('+D.students.length+')':g.name+' ('+D.students.filter(s=>s.groupId===g.id).length+')'}</button>`).join("")}</div>
+    <div class="g3" id="stuGrid">${stuCards("all")}</div>
+  </div>`;
+}
+function stuCards(f){
+  const list=f==="all"?D.students:D.students.filter(s=>s.groupId===f);
+  return list.map(s=>{const g=gG(s.groupId),ec=Object.values(D.evaluations).filter(e=>e.studentId===s.id).length;
+    return`<div class="si" style="flex-direction:column;align-items:stretch;gap:8px;cursor:pointer" onclick="viewStudent('${s.id}')">
+      <div class="fx ac g10"><div class="av av-l">${s.name.charAt(0)}</div><div style="flex:1"><div style="font-weight:700;font-size:14px">${s.name}</div><div class="fx g6 mt8">${bd(g.name,g.color,g.color+'20')} ${bd(ec+' تقييم','var(--accent)','var(--aL)')}</div>${s.phone?`<div style="font-size:11px;color:var(--tL);margin-top:3px">📱 ${s.phone}</div>`:''}</div>
+      <div class="fx g6" onclick="event.stopPropagation()"><button class="btn-i" onclick="oSM('${s.id}')" title="تعديل">✏️</button><button class="btn-i" onclick="cDS('${s.id}')" title="حذف" style="color:var(--danger)">🗑️</button></div></div>
+    </div>`}).join("");
+}
+function filterStudents(f){document.getElementById("stuGrid").innerHTML=stuCards(f)}
+function oSM(id){
+  const s=id?D.students.find(x=>x.id===id):null;
+  oM(`<div class="mt_"><span>${s?'✏️ تعديل بيانات الطالب':'➕ إضافة طالب جديد'}</span><button class="mc" onclick="cM()">✕</button></div>
+    <div class="fg"><label>اسم الطالب *</label><input type="text" id="mN" value="${s?s.name:''}" placeholder="الاسم الثلاثي..."></div>
+    <div class="fr"><div class="fg"><label>المجموعة *</label><select id="mG">${D.groups.map(g=>`<option value="${g.id}" ${s&&s.groupId===g.id?'selected':''}>${g.name}</option>`).join("")}</select></div>
+    <div class="fg"><label>تاريخ الالتحاق</label><input type="date" id="mJ" value="${s?s.joinDate||TD:TD}"></div></div>
+    <div class="fr"><div class="fg"><label>اسم ولي الأمر</label><input type="text" id="mP" value="${s?s.parentName||'':''}"></div>
+    <div class="fg"><label>رقم الهاتف</label><input type="text" id="mPh" value="${s?s.phone||'':''}" placeholder="05xxxxxxxx"></div></div>
+    <div class="fg"><label>ملاحظات</label><textarea id="mNo" placeholder="ملاحظات خاصة...">${s?s.notes||'':''}</textarea></div>
+    <div class="fx g10 mt16"><button class="btn btn-p" onclick="svS('${id||''}')" style="flex:1">${s?'💾 حفظ':'➕ إضافة'}</button><button class="btn btn-o" onclick="cM()">إلغاء</button></div>`);
+}
+function svS(id){const n=document.getElementById("mN").value.trim();if(n.length<2){tst("⚠️ الاسم مطلوب");return}const d={name:n,groupId:document.getElementById("mG").value,joinDate:document.getElementById("mJ").value,parentName:document.getElementById("mP").value.trim(),phone:document.getElementById("mPh").value.trim(),notes:document.getElementById("mNo").value.trim()};if(id){const s=D.students.find(x=>x.id===id);if(s)Object.assign(s,d)}else D.students.push({id:gI(),...d});sD();cM();rStu();tst(id?"✓ تم التحديث":"✓ تمت الإضافة")}
+function cDS(id){const s=D.students.find(x=>x.id===id);if(!s)return;oM(`<div class="mt_"><span>⚠️ تأكيد الحذف</span><button class="mc" onclick="cM()">✕</button></div><p style="margin-bottom:16px">هل تريد حذف <strong>${s.name}</strong> وجميع تقييماته؟</p><div class="fx g10"><button class="btn btn-d" onclick="dlS('${id}')" style="flex:1">🗑️ حذف</button><button class="btn btn-o" onclick="cM()">إلغاء</button></div>`)}
+function dlS(id){D.students=D.students.filter(s=>s.id!==id);Object.keys(D.evaluations).forEach(k=>{if(D.evaluations[k].studentId===id)delete D.evaluations[k]});sD();cM();rStu();tst("✓ تم الحذف")}
+function bulkImport(){oM(`<div class="mt_"><span>📥 استيراد طلاب متعدد</span><button class="mc" onclick="cM()">✕</button></div>
+  <div class="fg"><label>أدخل اسم كل طالب في سطر منفصل *</label><textarea id="bNames" rows="8" placeholder="أحمد محمد\nعلي سعد\nخالد فهد"></textarea></div>
+  <div class="fg"><label>المجموعة</label><select id="bGroup">${D.groups.map(g=>`<option value="${g.id}">${g.name}</option>`).join("")}</select></div>
+  <button class="btn btn-p" onclick="doBulk()" style="width:100%">➕ إضافة الجميع</button>`)}
+function doBulk(){const names=document.getElementById("bNames").value.split("\n").map(n=>n.trim()).filter(n=>n.length>=2);if(!names.length){tst("⚠️ أدخل أسماء");return}const g=document.getElementById("bGroup").value;names.forEach(n=>D.students.push({id:gI(),name:n,groupId:g,phone:"",parentName:"",notes:"",joinDate:TD}));sD();cM();rStu();tst(`✓ تمت إضافة ${names.length} طالب`)}
+
+// ══════════════════════════════════════
+// REPORTS (Enhanced with date range & export)
+// ══════════════════════════════════════
+function rRep(){
+  const el=document.getElementById("p-rep"),ac=aC(),ms=mS();
+  const pl={daily:"يومي",weekly:"أسبوعي",monthly:"شهري",custom:"مخصص"};
+  let df,dt;
+  if(rP==="daily"){df=dt=TD}
+  else if(rP==="weekly"){const d=new Date();d.setDate(d.getDate()-7);df=d.toISOString().split("T")[0];dt=TD}
+  else if(rP==="monthly"){const d=new Date();d.setMonth(d.getMonth()-1);df=d.toISOString().split("T")[0];dt=TD}
+  else{df=rDF||TD;dt=rDT||TD}
+
+  const fev=Object.values(D.evaluations).filter(e=>{const inR=e.date>=df&&e.date<=dt;const isS=rS==="all"||e.studentId===rS;return inR&&isS});
+  const rd=D.students.filter(s=>rS==="all"||s.id===rS).map(s=>{
+    const se=fev.filter(e=>e.studentId===s.id);const ca={};
+    ac.forEach(c=>{const sc=se.map(e=>e.scores[c.id]||0);ca[c.id]=sc.length>0?+(sc.reduce((a,b)=>a+b,0)/sc.length).toFixed(1):"—"});
+    const ta=se.length>0?+(se.reduce((s2,e)=>s2+ac.reduce((s3,c)=>s3+(e.scores[c.id]||0),0),0)/se.length).toFixed(1):"—";
+    return{...s,ca,ta,ec:se.length}});
+
+  el.innerHTML=`
+  <div class="cd no-print"><div class="fx fw_ ac jb g10">
+    <div class="fx g6 fw_ ac">
+      <span style="font-size:13px;font-weight:600">الفترة:</span>
+      ${["daily","weekly","monthly","custom"].map(p=>`<button class="btn-o ${rP===p?'on':''}" onclick="rP='${p}';rRep()">${pl[p]}</button>`).join("")}
+    </div>
+    <select onchange="rS=this.value;rRep()" style="width:auto;min-width:140px"><option value="all" ${rS==='all'?'selected':''}>جميع الطلاب</option>${D.students.map(s=>`<option value="${s.id}" ${rS===s.id?'selected':''}>${s.name}</option>`).join("")}</select>
+  </div>
+  ${rP==='custom'?`<div class="fx g10 ac mt12"><span style="font-size:13px">من:</span><input type="date" value="${rDF||TD}" onchange="rDF=this.value;rRep()" style="width:auto"><span style="font-size:13px">إلى:</span><input type="date" value="${rDT||TD}" onchange="rDT=this.value;rRep()" style="width:auto"></div>`:''}
+  </div>
+
+  <div class="cd">
+    <div class="cd-t"><span>📋 تقرير ${pl[rP]} ${rP!=='custom'?'• '+fD(df)+(df!==dt?' → '+fD(dt):''):''}</span>
+      <div class="fx g6 no-print">${fev.length>0?`<button class="btn btn-p btn-s" onclick="exportCSV()">📊 تصدير CSV</button><button class="btn-o" onclick="window.print()">🖨️ طباعة</button>`:''}</div>
+    </div>
+    ${fev.length===0?`<div class="es"><div class="ic">📭</div><div>لا توجد تقييمات في هذه الفترة</div></div>`:`
+    <div style="overflow-x:auto"><table style="border-spacing:0"><thead><tr style="border-bottom:2px solid var(--border)"><th>الطالب</th><th class="c">المجموعة</th>${ac.map(c=>`<th class="c">${c.icon} ${c.name}</th>`).join("")}<th class="c">المجموع</th><th class="c">المستوى</th><th class="c">عدد التقييمات</th></tr></thead><tbody>
+    ${rd.map(r=>{const lv=r.ta!=="—"?gL(Number(r.ta),ms):null;const g=gG(r.groupId);return`<tr style="border-bottom:1px solid var(--border)"><td style="font-weight:600;cursor:pointer" onclick="viewStudent('${r.id}')">${r.name}</td><td class="c">${bd(g.name,g.color,g.color+'20')}</td>${ac.map(c=>`<td class="c" style="font-weight:700;font-size:15px">${r.ca[c.id]}</td>`).join("")}<td class="c" style="font-weight:800;font-size:18px;color:${lv?.c||'var(--tL)'}">${r.ta}</td><td class="c">${lv?bd(lv.l,lv.c,lv.b):'—'}</td><td class="c" style="color:var(--tL)">${r.ec}</td></tr>`}).join("")}
+    </tbody></table></div>
+    <div class="dv"></div>
+    <div style="font-size:12px;color:var(--tL)">📊 إجمالي: ${fev.length} تقييم | المتوسط العام: ${rd.length>0?(rd.filter(r=>r.ta!=="—").reduce((s,r)=>s+Number(r.ta),0)/rd.filter(r=>r.ta!=="—").length).toFixed(1):'—'}/${ms} | أعلى: ${rd.length>0?rd.filter(r=>r.ta!=="—").sort((a,b)=>Number(b.ta)-Number(a.ta))[0]?.name||'—':'—'}</div>
+    `}
+  </div>`;
+}
+
+function exportCSV(){
+  const ac=aC(),ms=mS();
+  const fev=Object.values(D.evaluations);
+  let csv="\uFEFF";// BOM for Arabic
+  csv+="الطالب,المجموعة,"+ac.map(c=>c.name).join(",")+",المجموع,المستوى,التاريخ\n";
+  D.students.forEach(s=>{
+    const se=fev.filter(e=>e.studentId===s.id);const g=gG(s.groupId);
+    se.forEach(e=>{
+      const t=ac.reduce((s2,c)=>s2+(e.scores[c.id]||0),0);const lv=gL(t,ms);
+      csv+=`${s.name},${g.name},${ac.map(c=>e.scores[c.id]||0).join(",")},${t},${lv.l},${e.date}\n`;
+    });
+  });
+  const blob=new Blob([csv],{type:'text/csv;charset=utf-8;'});
+  const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=`تقرير_${TD}.csv`;a.click();
+  tst("✓ تم تصدير التقرير كملف CSV");
+}
+
+// ══════════════════════════════════════
+// AWARDS
+// ══════════════════════════════════════
+function rAw(){
+  const el=document.getElementById("p-aw"),{students:st,evaluations:ev}=D,ac=aC(),ms=mS();
+  if(!Object.keys(ev).length){el.innerHTML=`<div style="text-align:center;margin:24px 0"><div style="font-size:40px;margin-bottom:6px">🏆</div><h2 style="font-family:'Amiri',serif;font-size:24px;color:var(--primary)">لوحة التكريم</h2></div><div class="cd"><div class="es"><div class="ic">📝</div><div>ابدأ بتقييم الطلاب لتظهر الجوائز</div></div></div>`;return}
+  const stats=st.map(s=>{const ae=Object.values(ev).filter(e=>e.studentId===s.id);const avg=ae.length>0?ae.reduce((s2,e)=>s2+ac.reduce((s3,c)=>s3+(e.scores[c.id]||0),0),0)/ae.length:0;const pc={};ac.forEach(c=>{pc[c.id]=ae.length>0?ae.reduce((s2,e)=>s2+(e.scores[c.id]||0),0)/ae.length:0});const streak=ae.filter(e=>ac.reduce((s2,c)=>s2+(e.scores[c.id]||0),0)>=ms*.8).length;return{...s,avg,pc,streak,ec:ae.length}}).sort((a,b)=>b.avg-a.avg);
+  const aw=[{i:"🥇",t:"الطالب المثالي",d:"أعلى متوسط عام",s:stats[0],m:stats[0]?.avg?.toFixed(1)+"/"+ms}];
+  ac.slice(0,3).forEach(c=>{const b=[...stats].sort((a,b2)=>(b2.pc[c.id]||0)-(a.pc[c.id]||0))[0];aw.push({i:c.icon,t:"أفضل "+c.name,d:"أعلى درجة "+c.name,s:b,m:(b?.pc[c.id]||0).toFixed(1)+"/"+c.max})});
+  el.innerHTML=`
+  <div style="text-align:center;margin-bottom:24px"><div style="font-size:40px;margin-bottom:6px">🏆</div><h2 style="font-family:'Amiri',serif;font-size:24px;color:var(--primary);margin:0">لوحة التكريم والجوائز</h2></div>
+  <div class="g4">${aw.map(a=>`<div class="aw"><div style="font-size:32px;margin-bottom:8px">${a.i}</div><h3 style="font-size:15px;font-weight:700;color:var(--pD);margin-bottom:3px">${a.t}</h3><p style="font-size:11px;color:var(--tL);margin-bottom:12px">${a.d}</p>${a.s?`<div class="av av-g" style="margin:0 auto 8px">${a.s.name.charAt(0)}</div><div style="font-weight:700;font-size:15px;margin-bottom:4px">${a.s.name}</div>${bd(a.m,'var(--gold)','rgba(212,160,23,.12)')}`:''}</div>`).join("")}</div>
+  <div class="cd mt20"><div class="cd-t"><span>📊 الترتيب التراكمي</span></div>${stats.map((s,i)=>{const lv=gL(s.avg,ms);return`<div class="fx ac g12" style="padding:10px 14px;background:${i<3?'var(--gL)':i%2===0?'#FAFAF8':'#fff'};border-radius:10px;margin-bottom:6px;cursor:pointer" onclick="viewStudent('${s.id}')"><span style="font-weight:800;font-size:16px;min-width:28px;color:${i<3?'var(--gold)':'var(--tL)'}">${i===0?'🥇':i===1?'🥈':i===2?'🥉':i+1+'.'}</span><div style="flex:1"><div style="font-weight:600;font-size:13px">${s.name}</div><div class="fx g6 mt8">${bd(lv.l,lv.c,lv.b)} ${bd(s.ec+' تقييم','var(--tL)','#f0f0f0')}</div></div><div style="text-align:center"><div style="font-size:22px;font-weight:800;color:${lv.c}">${s.avg.toFixed(1)}</div><div style="font-size:10px;color:var(--tL)">من ${ms}</div></div></div>`}).join("")}</div>`;
+}
+
+// ══════════════════════════════════════
+// SETTINGS
+// ══════════════════════════════════════
+function rSet(){
+  const el=document.getElementById("p-set");
+  el.innerHTML=`
+  <div class="ss"><div class="ss-t">🏛️ الإعدادات العامة</div>
+    <div class="fr"><div class="fg"><label>اسم النظام</label><input type="text" value="${D.settings.systemTitle}" onchange="D.settings.systemTitle=this.value;sD();iN()"></div><div class="fg"><label>العام الدراسي</label><input type="text" value="${D.settings.academicYear}" onchange="D.settings.academicYear=this.value;sD();iN()"></div></div>
+    <div class="fr"><div class="fg"><label>اسم المؤسسة / الحلقة</label><input type="text" value="${D.settings.institutionName}" placeholder="مثال: حلقة مسجد النور" onchange="D.settings.institutionName=this.value;sD();iN()"></div><div class="fg"><label>اسم المعلم</label><input type="text" value="${D.settings.teacherName}" onchange="D.settings.teacherName=this.value;sD();iN()"></div></div>
+  </div>
+
+  <div class="ss"><div class="ss-t"><span>📂 إدارة المجموعات (${D.groups.length})</span><button class="btn btn-p btn-s" onclick="oGM()">➕ إضافة</button></div>
+    ${D.groups.map(g=>{const c=D.students.filter(s=>s.groupId===g.id).length;return`<div class="si"><div class="nfo"><div class="nm fx ac g8"><span style="width:12px;height:12px;border-radius:3px;background:${g.color};display:inline-block"></span>${g.name}</div><div class="ds">${c} طالب</div></div><div class="ax"><button class="btn-i" onclick="oGM('${g.id}')">✏️</button><button class="btn-i" onclick="cDG('${g.id}')" style="color:var(--danger)">🗑️</button></div></div>`}).join("")}
+  </div>
+
+  <div class="ss"><div class="ss-t"><span>📏 معايير التقييم (${aC().length} فعّال — المجموع: ${mS()} درجة)</span><button class="btn btn-p btn-s" onclick="oCM()">➕ إضافة</button></div>
+    ${D.criteria.map(c=>`<div class="si" style="opacity:${c.active?1:.5}"><div class="nfo"><div class="nm">${c.icon} ${c.name} <span style="font-size:11px;color:var(--tL);font-weight:400">— ${c.max} درجات</span></div><div class="ds">${c.desc}</div></div>
+    <div class="ax"><button class="btn-o btn-s" onclick="tgC('${c.id}')" style="${c.active?'color:var(--success);border-color:var(--success)':'color:var(--danger);border-color:var(--danger)'}">${c.active?'✓ فعّال':'✗ معطّل'}</button><button class="btn-i" onclick="oCM('${c.id}')">✏️</button><button class="btn-i" onclick="cDC('${c.id}')" style="color:var(--danger)">🗑️</button></div></div>`).join("")}
+  </div>
+
+  <div class="ss"><div class="ss-t">💾 إدارة البيانات</div>
+    <div class="fx fw_ g10">
+      <button class="btn btn-p" onclick="expD()">📤 تصدير نسخة احتياطية</button>
+      <button class="btn btn-w" onclick="document.getElementById('impF').click()">📥 استيراد بيانات</button>
+      <input type="file" id="impF" accept=".json" style="display:none" onchange="impD(event)">
+      <button class="btn btn-d" onclick="cRA()">🗑️ حذف كل البيانات</button>
+    </div>
+    <p style="font-size:11px;color:var(--tL);margin-top:10px">💡 التصدير ينشئ ملف JSON. يمكنك استيراده على أي جهاز. تصدير CSV متاح من صفحة التقارير.</p>
+  </div>`;
+}
+
+// Group modals
+function oGM(id){const g=id?D.groups.find(x=>x.id===id):null;oM(`<div class="mt_"><span>${g?'✏️ تعديل المجموعة':'➕ إضافة مجموعة'}</span><button class="mc" onclick="cM()">✕</button></div>
+  <div class="fg"><label>اسم المجموعة *</label><input type="text" id="gN" value="${g?g.name:''}" placeholder="مثال: المستوى المتقدم"></div>
+  <div class="fg"><label>لون المجموعة</label><div class="cg_">${CL.map(c=>`<div class="cd_ ${(g?g.color:CL[0])===c?'on':''}" style="background:${c}" onclick="document.querySelectorAll('.cd_').forEach(d=>d.classList.remove('on'));this.classList.add('on');document.getElementById('gC').value='${c}'"></div>`).join("")}</div><input type="hidden" id="gC" value="${g?g.color:CL[0]}"></div>
+  <div class="fx g10 mt16"><button class="btn btn-p" onclick="svG('${id||''}')" style="flex:1">${g?'💾 حفظ':'➕ إضافة'}</button><button class="btn btn-o" onclick="cM()">إلغاء</button></div>`)}
+function svG(id){const n=document.getElementById("gN").value.trim();if(!n){tst("⚠️ الاسم مطلوب");return}const c=document.getElementById("gC").value;if(id){const g=D.groups.find(x=>x.id===id);if(g){g.name=n;g.color=c}}else D.groups.push({id:gI(),name:n,color:c});sD();cM();rSet();tst(id?"✓ تم التحديث":"✓ تمت الإضافة")}
+function cDG(id){const g=D.groups.find(x=>x.id===id);if(!g)return;const c=D.students.filter(s=>s.groupId===id).length;oM(`<div class="mt_"><span>⚠️ حذف المجموعة</span><button class="mc" onclick="cM()">✕</button></div><p style="margin-bottom:6px">حذف <strong>${g.name}</strong>؟</p>${c>0?`<p style="font-size:12px;color:var(--danger);margin-bottom:16px">⚠️ ${c} طالب سينتقلون لمجموعة أخرى</p>`:''}<div class="fx g10"><button class="btn btn-d" onclick="dlG('${id}')" style="flex:1">🗑️ حذف</button><button class="btn btn-o" onclick="cM()">إلغاء</button></div>`)}
+function dlG(id){const f=D.groups.find(g=>g.id!==id);if(f)D.students.forEach(s=>{if(s.groupId===id)s.groupId=f.id});D.groups=D.groups.filter(g=>g.id!==id);sD();cM();rSet();tst("✓ تم الحذف")}
+
+// Criteria modals
+function oCM(id){const c=id?D.criteria.find(x=>x.id===id):null;oM(`<div class="mt_"><span>${c?'✏️ تعديل المعيار':'➕ إضافة معيار'}</span><button class="mc" onclick="cM()">✕</button></div>
+  <div class="fg"><label>اسم المعيار *</label><input type="text" id="cN" value="${c?c.name:''}" placeholder="مثال: الحضور"></div>
+  <div class="fr"><div class="fg"><label>الدرجة القصوى *</label><input type="number" id="cX" value="${c?c.max:10}" min="1" max="100"></div>
+  <div class="fg"><label>الأيقونة</label><div class="fx g8 fw_">${IC.map(i=>`<span style="font-size:20px;cursor:pointer;padding:3px;border-radius:6px;${(c?c.icon:'📖')===i?'background:var(--pL)':''}" onclick="this.parentElement.querySelectorAll('span').forEach(s=>s.style.background='');this.style.background='var(--pL)';document.getElementById('cI').value='${i}'">${i}</span>`).join("")}</div><input type="hidden" id="cI" value="${c?c.icon:'📖'}"></div></div>
+  <div class="fg"><label>الوصف</label><input type="text" id="cD" value="${c?c.desc:''}" placeholder="وصف مختصر..."></div>
+  <div class="fx g10 mt16"><button class="btn btn-p" onclick="svC('${id||''}')" style="flex:1">${c?'💾 حفظ':'➕ إضافة'}</button><button class="btn btn-o" onclick="cM()">إلغاء</button></div>`)}
+function svC(id){const n=document.getElementById("cN").value.trim();if(!n){tst("⚠️ الاسم مطلوب");return}const m=parseInt(document.getElementById("cX").value)||10,i=document.getElementById("cI").value,d=document.getElementById("cD").value.trim();if(id){const c=D.criteria.find(x=>x.id===id);if(c){c.name=n;c.max=m;c.icon=i;c.desc=d}}else D.criteria.push({id:gI(),name:n,max:m,icon:i,desc:d,active:true});sD();cM();rSet();tst(id?"✓ تم التحديث":"✓ تمت الإضافة")}
+function tgC(id){const c=D.criteria.find(x=>x.id===id);if(c){c.active=!c.active;sD();rSet();tst(c.active?"✓ تم التفعيل":"✗ تم التعطيل")}}
+function cDC(id){const c=D.criteria.find(x=>x.id===id);if(!c)return;oM(`<div class="mt_"><span>⚠️ حذف المعيار</span><button class="mc" onclick="cM()">✕</button></div><p style="margin-bottom:16px">حذف <strong>${c.icon} ${c.name}</strong>؟</p><div class="fx g10"><button class="btn btn-d" onclick="dlC('${id}')" style="flex:1">🗑️ حذف</button><button class="btn btn-o" onclick="cM()">إلغاء</button></div>`)}
+function dlC(id){D.criteria=D.criteria.filter(c=>c.id!==id);sD();cM();rSet();tst("✓ تم الحذف")}
+
+// Data management
+function expD(){const b=new Blob([JSON.stringify(D,null,2)],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download=`نسخة_احتياطية_${TD}.json`;a.click();tst("✓ تم التصدير")}
+function impD(e){const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=function(ev){try{const d=JSON.parse(ev.target.result);if(!d.students||!d.criteria){tst("⚠️ ملف غير صالح");return}D=d;sD();iN();rn();tst("✓ تم الاستيراد")}catch(er){tst("⚠️ خطأ في الملف")}};r.readAsText(f);e.target.value=''}
+function cRA(){oM(`<div class="mt_"><span>🚨 حذف جميع البيانات</span><button class="mc" onclick="cM()">✕</button></div><p style="color:var(--danger);margin-bottom:6px">سيتم حذف كل شيء نهائياً:</p><ul style="font-size:13px;margin:10px 16px 16px;line-height:2"><li>جميع الطلاب والتقييمات</li><li>جميع المجموعات والمعايير</li><li>جميع الإعدادات</li></ul><p style="font-size:12px;color:var(--danger);margin-bottom:16px">💡 صدّر نسخة احتياطية أولاً</p><div class="fx g10"><button class="btn btn-d" onclick="doReset()" style="flex:1">🗑️ حذف نهائي</button><button class="btn btn-o" onclick="cM()">إلغاء</button></div>`)}
+function doReset(){D=JSON.parse(JSON.stringify(DEF));sD();cM();iN();rn();tst("✓ تم إعادة التعيين")}
+
+// INIT
+iN();rDash();
+</script>
+</body>
+</html>
